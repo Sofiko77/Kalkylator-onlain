@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Математический решальник</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    min-height: 100vh;
+    padding: 20px;
+    color: #333;
+  }
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  header {
+    text-align: center;
+    color: #fff;
+    margin-bottom: 25px;
+  }
+  header h1 { font-size: 28px; margin-bottom: 8px; }
+  header p  { opacity: .9; font-size: 15px; }
+
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+    justify-content: center;
+  }
+  .tab {
+    background: rgba(255,255,255,.25);
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: .2s;
+  }
+  .tab:hover { background: rgba(255,255,255,.4); }
+  .tab.active { background: #fff; color: #764ba2; font-weight: 600; }
+
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.2);
+    display: none;
+  }
+  .card.active { display: block; }
+  .card h2 { margin-bottom: 18px; color: #764ba2; font-size: 20px; }
+
+  label { display: block; margin-bottom: 6px; font-size: 14px; color: #555; }
+  input {
+    width: 100%;
+    padding: 11px 14px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-size: 15px;
+    margin-bottom: 14px;
+    transition: .2s;
+  }
+  input:focus { outline: none; border-color: #764ba2; }
+
+  .row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .row > div { flex: 1; min-width: 120px; }
+
+  button.calc {
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .2s;
+  }
+  button.calc:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(118,75,162,.4); }
+
+  .result {
+    margin-top: 18px;
+    padding: 16px;
+    background: #f3f0ff;
+    border-left: 4px solid #764ba2;
+    border-radius: 8px;
+    font-size: 16px;
+    line-height: 1.6;
+    display: none;
+  }
+  .result.show { display: block; }
+  .result b { color: #764ba2; }
+
+  footer {
+    text-align: center;
+    color: rgba(255,255,255,.8);
+    margin-top: 25px;
+    font-size: 13px;
+  }
+  .table-mult {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 8px;
+    margin-top: 15px;
+  }
+  .table-mult div {
+    background: #f3f0ff;
+    padding: 8px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🧮 Математический решальник</h1>
+    <p>Быстрые решения школьных задач онлайн</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="quad">Квадратное уравнение</button>
+    <button class="tab" data-tab="percent">Проценты</button>
+    <button class="tab" data-tab="area">Площадь и периметр</button>
+    <button class="tab" data-tab="table">Таблица умножения</button>
+    <button class="tab" data-tab="nod">НОД и НОК</button>
+    <button class="tab" data-tab="fact">Факториал</button>
+  </div>
+
+  <!-- Квадратное уравнение -->
+  <div class="card active" id="quad">
+    <h2>Решение квадратного уравнения ax² + bx + c = 0</h2>
+    <div class="row">
+      <div><label>a</label><input type="number" id="qa" placeholder="например 1"></div>
+      <div><label>b</label><input type="number" id="qb" placeholder="например -5"></div>
+      <div><label>c</label><input type="number" id="qc" placeholder="например 6"></div>
+    </div>
+    <button class="calc" onclick="solveQuad()">Решить</button>
+    <div class="result" id="quadRes"></div>
+  </div>
+
+  <!-- Проценты -->
+  <div class="card" id="percent">
+    <h2>Проценты</h2>
+    <label>Сколько процентов составляет число X от числа Y?</label>
+    <div class="row">
+      <div><input type="number" id="pX" placeholder="X"></div>
+      <div><input type="number" id="pY" placeholder="Y"></div>
+    </div>
+    <button class="calc" onclick="solvePercent()">Посчитать</button>
+
+    <label style="margin-top:18px;">Найти P% от числа N</label>
+    <div class="row">
+      <div><input type="number" id="pP" placeholder="P (%)"></div>
+      <div><input type="number" id="pN" placeholder="N"></div>
+    </div>
+    <button class="calc" onclick="solvePercentOf()">Посчитать</button>
+    <div class="result" id="percRes"></div>
+  </div>
+
+  <!-- Площадь и периметр -->
+  <div class="card" id="area">
+    <h2>Площадь и периметр</h2>
+    <label>Фигура</label>
+    <select id="shape" style="width:100%;padding:11px;border-radius:10px;border:2px solid #ddd;margin-bottom:14px;font-size:15px;">
+      <option value="rect">Прямоугольник</option>
+      <option value="circle">Круг</option>
+      <option value="triangle">Треугольник (по основанию и высоте)</option>
+    </select>
+    <div class="row" id="shapeInputs">
+      <div><label>Сторона a</label><input type="number" id="sa"></div>
+      <div><label>Сторона b</label><input type="number" id="sb"></div>
+    </div>
+    <button class="calc" onclick="solveArea()">Посчитать</button>
+    <div class="result" id="areaRes"></div>
+  </div>
+
+  <!-- Таблица умножения -->
+  <div class="card" id="table">
+    <h2>Таблица умножения</h2>
+    <label>Введи число</label>
+    <input type="number" id="tnum" placeholder="например 7">
+    <button class="calc" onclick="showTable()">Показать</button>
+    <div class="table-mult" id="tableRes"></div>
+  </div>
+
+  <!-- НОД и НОК -->
+  <div class="card" id="nod">
+    <h2>НОД и НОК двух чисел</h2>
+    <div class="row">
+      <div><label>Число 1</label><input type="number" id="n1"></div>
+      <div><label>Число 2</label><input type="number" id="n2"></div>
+    </div>
+    <button class="calc" onclick="solveNod()">Посчитать</button>
+    <div class="result" id="nodRes"></div>
+  </div>
+
+  <!-- Факториал -->
+  <div class="card" id="fact">
+    <h2>Факториал числа n!</h2>
+    <label>Введи n (от 0 до 170)</label>
+    <input type="number" id="fnum" placeholder="например 5">
+    <button class="calc" onclick="solveFact()">Посчитать</button>
+    <div class="result" id="factRes"></div>
+  </div>
+
+  <footer>© Математический решальник — работает прямо в браузере</footer>
+</div>
+
+<script>
+// Переключение вкладок
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).classList.add('active');
+  });
+});
+
+function show(id, html) {
+  const el = document.getElementById(id);
+  el.innerHTML = html;
+  el.classList.add('show');
+}
+
+// 1. Квадратное уравнение
+function solveQuad() {
+  const a = parseFloat(qa.value);
+  const b = parseFloat(qb.value);
+  const c = parseFloat(qc.value);
+  if (isNaN(a) || isNaN(b) || isNaN(c)) return show('quadRes', '⚠️ Заполни все поля');
+  if (a === 0) return show('quadRes', '⚠️ a не может быть 0 (это не квадратное уравнение)');
+
+  const D = b*b - 4*a*c;
+  let html = `<b>Дискриминант D</b> = ${D}<br>`;
+
+  if (D > 0) {
+    const x1 = (-b + Math.sqrt(D)) / (2*a);
+    const x2 = (-b - Math.sqrt(D)) / (2*a);
+    html += `<b>x₁</b> = ${x1.toFixed(3)}<br><b>x₂</b> = ${x2.toFixed(3)}`;
+  } else if (D === 0) {
+    const x = -b / (2*a);
+    html += `<b>x</b> = ${x.toFixed(3)} (один корень)`;
+  } else {
+    html += 'Корней нет (D &lt; 0)';
+  }
+  show('quadRes', html);
+}
+
+// 2. Проценты
+function solvePercent() {
+  const x = parseFloat(pX.value);
+  const y = parseFloat(pY.value);
+  if (isNaN(x) || isNaN(y) || y === 0) return show('percRes', '⚠️ Проверь данные (Y ≠ 0)');
+  const res = (x / y) * 100;
+  show('percRes', `<b>${x}</b> от <b>${y}</b> = <b>${res.toFixed(2)}%</b>`);
+}
+function solvePercentOf() {
+  const p = parseFloat(pP.value);
+  const n = parseFloat(pN.value);
+  if (isNaN(p) || isNaN(n)) return show('percRes', '⚠️ Заполни поля');
+  const res = (p / 100) * n;
+  show('percRes', `<b>${p}%</b> от <b>${n}</b> = <b>${res.toFixed(3)}</b>`);
+}
+
+// 3. Площадь и периметр
+document.getElementById('shape').addEventListener('change', function() {
+  const v = this.value;
+  const box = document.getElementById('shapeInputs');
+  if (v === 'rect') {
+    box.innerHTML = `<div><label>Сторона a</label><input type="number" id="sa"></div>
+                     <div><label>Сторона b</label><input type="number" id="sb"></div>`;
+  } else if (v === 'circle') {
+    box.innerHTML = `<div><label>Радиус r</label><input type="number" id="sa"></div>`;
+  } else {
+    box.innerHTML = `<div><label>Основание a</label><input type="number" id="sa"></div>
+                     <div><label>Высота h</label><input type="number" id="sb"></div>`;
+  }
+});
+function solveArea() {
+  const v = document.getElementById('shape').value;
+  const a = parseFloat(document.getElementById('sa').value);
+  const b = parseFloat(document.getElementById('sb')?.value);
+  const PI = Math.PI;
+  let html = '';
+
+  if (v === 'rect') {
+    if (isNaN(a) || isNaN(b)) return show('areaRes', '⚠️ Заполни оба поля');
+    html = `<b>Площадь</b> = ${(a*b).toFixed(3)}<br><b>Периметр</b> = ${(2*(a+b)).toFixed(3)}`;
+  } else if (v === 'circle') {
+    if (isNaN(a)) return show('areaRes', '⚠️ Введи радиус');
+    html = `<b>Площадь</b> = ${(PI*a*a).toFixed(3)}<br><b>Длина окружности</b> = ${(2*PI*a).toFixed(3)}`;
+  } else {
+    if (isNaN(a) || isNaN(b)) return show('areaRes', '⚠️ Заполни оба поля');
+    html = `<b>Площадь</b> = ${(0.5*a*b).toFixed(3)}`;
+  }
+  show('areaRes', html);
+}
+
+// 4. Таблица умножения
+function showTable() {
+  const n = parseInt(tnum.value);
+  if (isNaN(n)) return show('tableRes', '⚠️ Введи число');
+  let html = '';
+  for (let i = 1; i <= 10; i++) {
+    html += `<div>${n} × ${i} = <b>${n*i}</b></div>`;
+  }
+  const box = document.getElementById('tableRes');
+  box.innerHTML = html;
+  box.classList.add('show');
+}
+
+// 5. НОД и НОК
+function gcd(a, b) { return b ? gcd(b, a % b) : a; }
+function solveNod() {
+  const a = Math.abs(parseInt(n1.value));
+  const b = Math.abs(parseInt(n2.value));
+  if (isNaN(a) || isNaN(b) || a === 0 || b === 0) return show('nodRes', '⚠️ Введи два числа (не 0)');
+  const g = gcd(a, b);
+  const l = (a * b) / g;
+  show('nodRes', `<b>НОД</b>(${a}, ${b}) = <b>${g}</b><br><b>НОК</b>(${a}, ${b}) = <b>${l}</b>`);
+}
+
+// 6. Факториал
+function solveFact() {
+  const n = parseInt(fnum.value);
+  if (isNaN(n) || n < 0) return show('factRes', '⚠️ Введи неотрицательное число');
+  if (n > 170) return show('factRes', '⚠️ Слишком большое число');
+  let res = 1n;
+  for (let i = 2n; i <= BigInt(n); i++) res *= i;
+  show('factRes', `<b>${n}!</b> = ${res}`);
+}
+</script>
+</body>
+</html>
